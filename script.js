@@ -3,14 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const setAlarmButton = document.getElementById("setAlarm");
     const cancelButton = document.getElementById("cancelAlarm");
     const timeDisplay = document.getElementById("time");
-    let alarmInterval;
-
-    // Function to update the countdown display
-    function updateCountdown(countdownTime) {
-        const minutes = String(Math.floor(countdownTime / 60)).padStart(2, "0");
-        const seconds = String(countdownTime % 60).padStart(2, "0");
-        timeDisplay.textContent = `Time until alarm: ${minutes}:${seconds}`;
-    }
+    let alarmInterval = null;
 
     setAlarmButton.addEventListener("click", () => {
         const alarmTime = alarmTimeInput.value;
@@ -19,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Calculate the time until the alarm goes off
         const now = new Date();
         const alarmParts = alarmTime.split(":");
         const alarmDate = new Date(
@@ -30,22 +22,19 @@ document.addEventListener("DOMContentLoaded", () => {
             parseInt(alarmParts[1])
         );
 
-        const timeUntilAlarm = (alarmDate - now);
+        const timeUntilAlarm = alarmDate - now;
 
         if (timeUntilAlarm <= 0) {
             alert("Please select a future time for the alarm.");
             return;
         }
 
-        // Display the countdown
-        clearInterval(alarmInterval); // Clear any previous countdown
-        updateCountdown(Math.floor(timeUntilAlarm / 1000)); // Convert to seconds
-        alarmTimeInput.disabled = true;
-        setAlarmButton.disabled = true;
-        cancelButton.disabled = false;
+        // Clear any previous countdown
+        clearInterval(alarmInterval);
 
         // Update countdown every second
         alarmInterval = setInterval(() => {
+            const timeUntilAlarm = alarmDate - new Date();
             if (timeUntilAlarm <= 0) {
                 clearInterval(alarmInterval);
                 timeDisplay.textContent = "Time to wake up!";
@@ -54,12 +43,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 cancelButton.disabled = true;
                 return;
             }
-            updateCountdown(Math.floor(timeUntilAlarm / 1000));
-            timeUntilAlarm -= 1000;
+            updateCountdown(timeUntilAlarm / 1000); // Convert to seconds
         }, 1000);
+
+        // Display the countdown
+        updateCountdown(timeUntilAlarm / 1000); // Convert to seconds
+        alarmTimeInput.disabled = true;
+        setAlarmButton.disabled = true;
+        cancelButton.disabled = false;
     });
 
-    // Cancel the alarm
     cancelButton.addEventListener("click", () => {
         clearInterval(alarmInterval);
         timeDisplay.textContent = "";
@@ -68,7 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
         cancelButton.disabled = true;
     });
 
-    // Update the clock
+    function updateCountdown(countdownTime) {
+        const minutes = String(Math.floor(countdownTime / 60)).padStart(2, "0");
+        const seconds = String(Math.floor(countdownTime % 60)).padStart(2, "0");
+        timeDisplay.textContent = `Time until alarm: ${minutes}:${seconds}`;
+    }
+
     function updateClock() {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, "0");
