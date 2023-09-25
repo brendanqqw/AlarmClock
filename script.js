@@ -4,12 +4,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelButton = document.getElementById("cancelAlarm");
     const timeDisplay = document.getElementById("time");
     let alarmInterval;
-    
+
     // Function to update the countdown display
     function updateCountdown(countdownTime) {
         const minutes = String(Math.floor(countdownTime / 60)).padStart(2, "0");
         const seconds = String(countdownTime % 60).padStart(2, "0");
         timeDisplay.textContent = `Time until alarm: ${minutes}:${seconds}`;
+    }
+
+    // Function to show the countdown display
+    function showCountdown() {
+        timeDisplay.style.display = "block";
+    }
+
+    // Function to hide the countdown display
+    function hideCountdown() {
+        timeDisplay.style.display = "none";
     }
 
     setAlarmButton.addEventListener("click", () => {
@@ -38,7 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Display the countdown
-        updateCountdown(timeUntilAlarm / 1000); // Convert to seconds
+        showCountdown();
+        updateCountdown(Math.floor(timeUntilAlarm / 1000)); // Convert to seconds
         alarmTimeInput.disabled = true;
         setAlarmButton.disabled = true;
         cancelButton.disabled = false;
@@ -61,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cancel the alarm
     cancelButton.addEventListener("click", () => {
         clearInterval(alarmInterval);
+        hideCountdown();
         timeDisplay.textContent = "";
         alarmTimeInput.disabled = false;
         setAlarmButton.disabled = false;
